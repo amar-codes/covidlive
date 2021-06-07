@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CovidLive | Početna</title>
+
+    <!-- BOOTSTRAP -->
+    <link href="css/bootstrap.css" type="text/css" rel="stylesheet">
+    <!-- BOOTSTRAP -->
+
+    <!-- STYLE -->
+    <link href="css/style.css" rel="stylesheet" type="text/css">
+    <!-- STYLE -->
+
+    <!-- FONT AWESOME -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <!-- FONT AWESOME -->
+
+    <!-- FONTS GOOGLE -->
+    <link href="https://fonts.googleapis.com/css2?family=Gloria+Hallelujah&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito&family=Poppins&display=swap" rel="stylesheet">
+    <!-- FONTS GOOGLE -->
+
+    <!-- PRELOADER CSS -->
+    <style>
+        html{scroll-behavior: smooth}
+
+        body {
+            overflow: hidden;
+        }
+
+        /* Preloader */
+        #preloader {
+            position: fixed;
+            top:0;
+            left:0;
+            right:0;
+            bottom:0;
+            background-color:#fff; /* change if the mask should have another color then white */
+            z-index:99; /* makes sure it stays on top */
+        }
+
+        #status {
+            width:200px;
+            height:200px;
+            position:absolute;
+            left:50%; /* centers the loading animation horizontally one the screen */
+            top:50%; /* centers the loading animation vertically one the screen */
+            background-image:url(https://i.pinimg.com/originals/78/e8/26/78e826ca1b9351214dfdd5e47f7e2024.gif); /* path to your loading animation */
+            background-repeat:no-repeat;
+            background-position:center;
+            margin:-100px 0 0 -100px; /* is width and height divided by two */
+        }
+    </style>
+    <!-- PRELOADER CSS -->
+
+    <!-- MAP -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
+    <!-- MAP -->
+
+    <!-- SWEET ALERT -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+    <script src="https://cdn.jsdelivr.net/npm/promise-polyfill"></script>
+    <!-- SWEET ALERT -->
+
+    <!-- AOS -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <!-- AOS -->
+</head>
+<body style="padding-top: 200px">
+<!-- Preloader -->
+<div id="preloader">
+    <div id="status">&nbsp;</div>
+</div>
+<nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top">
+    <a class="navbar-brand" href="index.html" style="font-family: 'Gloria Hallelujah', cursive;">
+        <img src="img/logo.png" width="100"> <font style="color: red">Covid</font>Live
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent" style="">
+        <ul class="navbar-nav ml-auto" style="font-family: 'Nunito', sans-serif;">
+            <div style="text-align: center">
+            <li class="nav-item active">
+                <a class="nav-link" href="index.html">Početna stranica <span class="sr-only">(current)</span></a>
+            </li>
+            </div>
+
+            <div style="text-align: center">
+                <li class="nav-item">
+                    <a class="nav-link" href="#korona">O Koronavirusu</a>
+                </li>
+            </div>
+
+                <div style="text-align: center">
+            <li class="nav-item">
+                <a class="nav-link" href="#zastita">Zaštita</a>
+            </li>
+                </div>
+
+                <div style="text-align: center">
+            <li class="nav-item">
+                <a class="nav-link" href="#simptomi">Simptomi</a>
+            </li>
+                </div>
+
+                <div style="text-align: center">
+            <li class="nav-item">
+                <a class="nav-link" href="#kontakt">Kontakt</a>
+            </li>
+                </div>
+        </ul>
+    </div>
+</nav>
+
+<header class="container header" style="font-family: 'Nunito', sans-serif">
+    <center><img src="img/world-icon.png" width="64"> </center><br>
+<div class="card-group">
+    <div class="covid-stat-infected card col-md-4 text-white" style="background-color: black; border-radius: 5px">
+        <div class="card-body">
+            <small style="font-size: 12px">UKUPNO REGISTROVANIH ZARAŽENIH OSOBA U SVIJETU</small><br>
+            <h4 id="world-infected" class="text-danger"></h4>
+        </div>
+    </div>
+&nbsp;
+    <div class="covid-stat-death card col-md-4 text-white" style="background-color: black; border-radius: 5px">
+        <div class="card-body">
+            <small style="font-size: 12px">UKUPNO REGISTROVANIH PREMINULIH OSOBA U SVIJETU</small><br>
+            <h4 id="world-death" class="text-danger"></h4>
+        </div>
+    </div>
+    &nbsp;
+    <div class="covid-stat-recovered card col-md-4 text-white" style="background-color: black; border-radius: 5px">
+        <div class="card-body">
+            <small style="font-size: 12px">UKUPNO REGISTROVANIH OPORAVLJENIH OSOBA U SVIJETU</small><br>
+            <h4 id="world-recovered" class="text-success"></h4>
+        </div>
+    </div>
+</div>
+<br><br>
+    <center><img src="img/zastava-bih.jpg" width="64"> </center><br>
+    <div class="card-group">
+        <div class="covid-stat-infected card col-md-4 text-white" style="background-color: black; border-radius: 5px">
+            <div class="card-body">
+                <small style="font-size: 12px">UKUPNO REGISTROVANIH ZARAŽENIH OSOBA U BiH</small><br>
+                <h4 id="bih-infected" class="text-danger"></h4>
+            </div>
+        </div>
+&nbsp;
+        <div class="covid-stat-death card col-md-4 text-white" style="background-color: black; border-radius: 5px">
+            <div class="card-body">
+                <small style="font-size: 12px">UKUPNO REGISTROVANIH PREMINULIH OSOBA U BiH</small>
+                <h4 id="bih-deaths" class="text-gray"></h4>
+            </div>
+        </div>
+&nbsp;
+        <div class="covid-stat-recovered card col-md-4 text-white" style="background-color: black; border-radius: 5px">
+            <div class="card-body">
+                <small style="font-size: 12px">UKUPNO REGISTROVANIH OPORAVLJENIH OSOBA U BiH</small>
+                <h4 id="bih-recovered" class="text-success"></h4>
+            </div>
+        </div>
+
+    </div>
+</header>
+
+
+<div class="container mx-auto map-container" style="text-align: center" data-aos="flip-down">
+    <div id="mapid" style="width: 100%; height: 400px;"></div>
+</div>
+
+<div class="jumbotron bg-transparent container" data-aos="fade-right" id="korona" data-aos="flip-down">
+    <div class="card-group">
+
+        <div class="card col-md-7 bg-transparent" style="border-top: 0px; border-bottom: 0px; border-right: 0px; border-left: 0px;">
+            <div class="card-body">
+                <h2 class="card-title" style="font-size: 60px"><strong>Šta je Koronavirus?</strong></h1>
+                    <p class="card-text">Bolest uzrokovana koronavirusom (COVID-19) je zarazna bolest koju uzrokuje novootkriveni koronavirus.
+                        Većina osoba koje obole od virusa COVID-19 će imati blage do umjerene simptome te će se oporaviti bez posebnog liječenja.
+                    </p>
+                    <li class="fa fa-check-circle" style="color: #31d092;"></li><strong> Perite svoje ruke</strong> – često sapunom i vodom najmanje 20 sekundi, posebno nakon što ste bili na javnom mjestu ili nakon puhanja nosa, kašljanja ili kihanja.<br>
+                    <li class="fa fa-check-circle" style="color: #31d092;"></li><strong> Socijalna distanca</strong> – održavajte najmanje 2 metra udaljenosti između sebe i drugih. Zašto? Kad netko kašlje, kihne ili govori, prskaju male kapljice tekućine s nosa ili usta koje mogu sadržavati virus. Ako ste preblizu, možete udahnuti kapljice, uključujući virus COVID-19 ako osoba ima bolest.<br>
+                    <li class="fa fa-check-circle" style="color: #31d092;"></li><strong> Pokrijte usta i nos</strong>– maramicom kad kašljate ili kihnete ili koristite unutrašnjost lakta.
+            </div>
+        </div>
+
+        <div class="card text-white" style="border-top: 0px; border-bottom: 0px; border-right: 0px; border-left: 0px;">
+            <img class="card-img" src="img/header-corona.svg" alt="Card image">
+            <div class="card-img-overlay">
+                <center>
+                    <i class="fa fa-play-circle" style="padding-top: 50%; font-size: 60px;" onClick="sweetFunc();"></i>
+                </center>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    function sweetFunc(){
+        Swal.fire({
+            title: 'Zaštitite sebe i druge od Coronavirusa',
+            html: '<iframe width="400" height="315" src="https://www.youtube.com/embed/1APwq1df6Mw" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>'
+        })
+    }
+</script>
+
+
+<div class="jumbotron bg-transparent container" data-aos="fade-right" id="zastita" data-aos="flip-down">
+    <h1 class="display-4 text-center"><b>Kako se zaštititi od COVID-19?</b></h1>
+
+    <div class="card-group container" data-aos="fade-right">
+
+        <div class="card col-md-7" style="border-top: 0px; border-bottom: 0px; border-right: 0px; border-left: 0px;">
+            <div class="card-body text-center">
+                <img src="img/stay-home.png" width="128">
+                <h1 class="card-title"><strong>Ostanite kući</strong></h1>
+            </div>
+        </div>
+
+        <div class="card col-md-7" style="border-top: 0px; border-bottom: 0px; border-right: 0px; border-left: 0px;">
+            <div class="card-body text-center">
+                <img src="img/prevention/wear-a-mask.png" width="128">
+                <h1 class="card-title"><strong>Nosite masku</strong></h1>
+                </div>
+        </div>
+
+    </div>
+
+    <div class="card-group container" data-aos="fade-right">
+
+        <div class="card col-md-7" style="border-top: 0px; border-bottom: 0px; border-right: 0px; border-left: 0px;">
+            <div class="card-body text-center">
+                <img src="img/prevention/distance-icon.png" width="128">
+                <h1 class="card-title"><strong>Održavati socijalnu distancu</strong></h1>
+               </div>
+        </div>
+
+        <div class="card col-md-7" style="border-top: 0px; border-bottom: 0px; border-right: 0px; border-left: 0px;">
+            <div class="card-body text-center">
+                <img src="img/prevention/prevention-5.png" width="128">
+                <h1 class="card-title"><strong>Perite ruke često</strong></h1>
+                </div>
+        </div>
+
+    </div>
+
+    <div class="card-group container" data-aos="fade-right">
+
+        <div class="card col-md-7" style="border-top: 0px; border-bottom: 0px; border-right: 0px; border-left: 0px;">
+            <div class="card-body text-center">
+                <img src="img/prevention/sneezing.png" width="128">
+                <h1 class="card-title"><strong>Kad kašljete i kišete prekrijte usta i nos savijenim laktom</strong></h1>
+            </div>
+        </div>
+
+        <div class="card col-md-7" style="border-top: 0px; border-bottom: 0px; border-right: 0px; border-left: 0px;">
+            <div class="card-body text-center">
+                <img src="img/prevention/prevention-6.png" width="128">
+                <h1 class="card-title"><strong>Kad kašljete i imate povišenu temperaturu, izbjegavajte bliske kontakte.</strong></h1>
+                 </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="bg-transparent container" data-aos="fade-right" data-aos="flip-down">
+    <div class="card-group">
+
+        <div class="card 6" style="border-top: 0px; border-bottom: 0px; border-right: 0px; border-left: 0px;">
+            <div class="card-body">
+                <img src="img/corona-symptom.svg" class="card-img">
+            </div>
+        </div>
+
+        <div class="card col-md-8 bg-transparent" id="simptomi" style="border-top: 0px; border-bottom: 0px; border-right: 0px; border-left: 0px;">
+            <div class="card-body" style="font-family: 'Nunito', sans-serif;">
+                <h2 class="card-title"><strong>Simptomi</strong></h2>
+                <p class="card-text">Do pojave simptoma u prosjeku dolazi 5 do 6 dana od kontakta s virusom, a ponekad i do 14 dana.</p>
+
+                <div class="bg-warning custom-padding-1">
+                <p>
+                    Veoma česti simptomi:
+                <li> povišena temperatura;</li>
+                <li>suhi kašalj;</li>
+                <li>  umor.</li>
+                </p>
+                </div>
+
+                <div class="bg-medium custom-padding-1">
+               <p>Manje česti simptomi:
+                <li>bolovi i tegobe;</li>
+                <li>grlobolja;</li>
+                <li>proljev;</li>
+                <li>konjuktivitis;</li>
+                <li> glavobolja;</li>
+                <li> gubitak okusa ili njuha;</li>
+                <li>osip na koži ili promjena boje prstiju na rukama ili nogama.</li>
+               </p>
+                </div>
+
+                <div class="bg-danger custom-padding-1">
+                <p>
+                    Ozbiljni simptomi:
+                <li>otežano disanje ili nedostatak daha;</li>
+                <li>bol ili pritisak u grudima;</li>
+                </p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+<script src="https://cdn.jotfor.ms/static/prototype.forms.js" type="text/javascript"></script>
+<script src="https://cdn.jotfor.ms/static/jotform.forms.js?3.3.19334" type="text/javascript"></script>
+<script type="text/javascript"> JotForm.init(function(){
+    if (window.JotForm && JotForm.accessible) $('input_1').setAttribute('tabindex',0);
+    if (window.JotForm && JotForm.accessible) $('input_3').setAttribute('tabindex',0);
+    if (window.JotForm && JotForm.accessible) $('input_4').setAttribute('tabindex',0); JotForm.newDefaultTheme = false; JotForm.newPaymentUIForNewCreatedForms = false; JotForm.highlightInputs = false; JotForm.alterTexts({"confirmClearForm":"Are you sure you want to clear the form","incompleteFields":"Please complete required (*) fields.","lessThan":"Your score should be less than"}); /*INIT-END*/ }); JotForm.prepareCalculationsOnTheFly([null,{"name":"name1","qid":"1","text":"Name","type":"control_textbox"},null,{"name":"email","qid":"3","text":"E-mail","type":"control_textbox"},{"name":"message","qid":"4","text":"Message","type":"control_textarea"},null,null,{"name":"submit7","qid":"7","text":"Submit","type":"control_button"},{"name":"contactUs","qid":"8","text":"Contact Us","type":"control_head"}]); setTimeout(function() {
+    JotForm.paymentExtrasOnTheFly([null,{"name":"name1","qid":"1","text":"Name","type":"control_textbox"},null,{"name":"email","qid":"3","text":"E-mail","type":"control_textbox"},{"name":"message","qid":"4","text":"Message","type":"control_textarea"},null,null,{"name":"submit7","qid":"7","text":"Submit","type":"control_button"},{"name":"contactUs","qid":"8","text":"Contact Us","type":"control_head"}]);}, 20); </script>
+<div class="jumbotron bg-white container" data-aos="fade-right" id="kontakt" data-aos="flip-down">
+    <h1 class="display-4 text-center">Kontakt</h1>
+    <hr class="my-4 bg-dark" width="50%">
+    <form class="contact100-form validate-form jotform-form" action="https://submit.jotformeu.com/submit/203025287273048/" method="post" name="form_202115014350334" id="202115014350334" accept-charset="utf-8" autocomplete="on">
+
+        <div class="wrap-input100 rs1-wrap-input100 validate-input" data-validate="Ime i prezime je obavezno">
+            <span class="label-input100">Ime i prezime</span>
+            <input class="input100 form-textbox validate[required]" type="text" name="q1_name1" placeholder="Unesite Vaše ime i prezime" id="input_1" data-type="input-textbox" size="40" value="" placeholder=" " data-component="textbox" aria-labelledby="label_1" required="">
+            <span class="focus-input100"></span>
+        </div>
+
+        <div class="wrap-input100 rs1-wrap-input100 validate-input" data-validate = "Validan e-mail je obavezan: name@yourdomain.com">
+            <span class="label-input100">E-mail</span>
+            <input class="input100 form-textbox validate[Email]" id="input_6" name="q6_email" data-component="email" aria-labelledby="label_6 sublabel_input_6"type="email" name="q3_email" placeholder="Unesite e-mail adresu" id="input_3" data-type="input-textbox" size="40" placeholder=" " required="">
+            <span class="focus-input100"></span>
+        </div>
+
+        <div class="wrap-input100 validate-input" data-validate = "Poruka je obavezna">
+            <span class="label-input100">Poruka</span>
+            <textarea class="input100 form-textarea" name="q7_typeA" placeholder="Unesite poruku..." id="input_7" cols="40" rows="6" data-component="textarea" required="" aria-labelledby="label_7"></textarea>
+            <span class="focus-input100"></span>
+        </div>
+
+
+        <div class="container-contact100-form-btn">
+            <button class="contact100-form-btn form-submit-button submit-button jf-form-buttons jsTest-submitField" onclick="alert('Uspješno ste poslali poruku!')" id="input_7" type="submit" data-component="button" data-content="">
+						<span>
+							Pošalji
+							<i class="fa fa-long-arrow-right m-l-7" aria-hidden="true"></i>
+						</span>
+            </button>
+        </div>
+    </form>
+</div>
+</div>
+
+<!-- Site footer -->
+<footer class="container-fluid site-footer bg-light mx-auto text-center text-black-50" style="margin-top: 100px;">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="index.html" style="font-family: 'Gloria Hallelujah', cursive;">
+            <img src="img/logo.png" width="100"> <font style="color: red">Covid</font>Live
+        </a>
+        <hr>
+    </div>
+    <div class="container-fluid">
+        <p class="text-center">Copyright &copy; 2020 All Rights Reserved by
+            CovidLive | Developed by Amar Garčević.</a>
+        </p>
+        <center>
+            <div class="text-center">
+                <ul class="social-icons">
+                    <a class="social-media-button-2" href="mailto:garcevicamar@gmail.com"><i class="fa fa-envelope"></i></a>
+        </center>
+        </ul>
+    </div>
+    </div>
+    </div>
+</footer>
+
+<script>
+    AOS.init();
+</script>
+<!-- jQuery Plugin -->
+<script type="text/javascript" src="https://code.jquery.com/jquery-1.12.3.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+<script src="js/covid-stat.js"></script>
+<!-- PRELOADER SCRIPT -->
+<script type="text/javascript">
+    //<![CDATA[
+    $(window).on('load', function() { // makes sure the whole site is loaded
+        $('#status').fadeOut(); // will first fade out the loading animation
+        $('#preloader').delay(350).fadeOut('slow'); // will fade out the white DIV that covers the website.
+        $('body').delay(750).css({'overflow':'visible'});
+    })
+    //]]>
+</script>
+<!-- PRELOADER SCRIPT -->
+</body>
+</html>
